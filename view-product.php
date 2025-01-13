@@ -1,57 +1,46 @@
 <?php
-require_once 'Product.php';
-
-$productModel = new Product();
-$products = $productModel->getAllProducts();
+require_once "Product.php";
+$product = new Product();
+$producten = $product->getAllProducts();
 ?>
 
 <!DOCTYPE html>
-<html lang="nl">
+<html>
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Overzicht Producten</title>
+    <title>Producten Overzicht</title>
 </head>
 
 <body>
-    <h1> Overzicht van producten </h1>
-
-    <?php if (empty($products)): ?>
-        <p> Er zijn geen producten </p>
-    <?php else: ?>
-        <table>
-            <thead>
-                <tr>
-                    <th>Product Naam</th>
-                    <th>Prijs Per Stuk</th>
-                    <th>Omschrijving</th>
-                    <th>Foto</th>
-                    <th>Actie</th>
-                </tr>
-            </thead>
-
-
-            <tbody>
-                <?php foreach ($products as $product): ?>
-                    <tr>
-                        <td><?= htmlspecialchars($product['naam']) ?></td>
-                        <td>€<?= htmlspecialchars(number_format($product['prijs_per_stuk'], 2)) ?></td>
-                        <td><?= htmlspecialchars($product['omschrijving']) ?></td>
-                        <td>
-                            <?php if ($product['foto']): ?>
-                                <img src="<?= htmlspecialchars($product['foto']) ?>" alt="Product afbeelding">
-                            <?php else: ?>
-                                Geen afbeelding
-                            <?php endif; ?>
-                        </td>
-                        <td>
-                            <a href="edit-product.php?id=<?= htmlspecialchars($product['id']) ?>"> Bewerk Foto </a> |
-                            <a href="delete-product.php?id=<?= htmlspecialchars($product['id']) ?>" onclick="return confirm('Wil je echt dat het product verwijderd wordt?')">Verwijderen</a>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
-    <?php endif; ?>
+    <h1>Producten Overzicht</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ProductNaam</th>
+                <th>Omschrijving</th>
+                <th>Prijs Per Stuk</th>
+                <th>Foto</th>
+                <th>Acties</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ($producten as $product): ?>
+            <tr>
+                <td><?php echo htmlspecialchars($product['productNaam']); ?></td>
+                <td><?php echo htmlspecialchars($product['omschrijving']); ?></td>
+                <td>€<?php echo number_format($product['prijsPerStuk'], 2); ?></td>
+                <td>
+                    <img src="<?php echo htmlspecialchars($product['foto']); ?>" alt="Foto" width="50" height="50">
+                </td>
+                <td>
+                    <a href="edit-product.php?id=<?php echo $product['productID']; ?>">Bewerken</a>
+                    <a href="delete-product.php?id=<?php echo $product['productID']; ?>"
+                        onclick="return confirm('Weet u zeker dat u dit product wilt verwijderen?')">Verwijderen</a>
+                </td>
+            </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
 </body>
+
 </html>

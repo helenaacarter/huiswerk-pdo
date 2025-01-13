@@ -10,7 +10,6 @@ class Product
         $this->db = new Database();
     }
 
-    
     public function insertProduct($productNaam, $omschrijving, $prijsPerStuk, $fotoPad)
     {
         $sql = "INSERT INTO products (productNaam, omschrijving, prijsPerStuk, foto) 
@@ -25,44 +24,49 @@ class Product
         return $this->db->run($sql, $params);
     }
 
-    
     public function getAllProducts() {
         $sql = "SELECT * FROM products";
         return $this->db->run($sql)->fetchAll(); 
     }
 
-    
-    public function getProductById($id) {
-        $sql = "SELECT * FROM products WHERE id = :id";
-        $params = [':id' => $id];
-        return $this->db->run($sql, $params)->fetch();
+    public function getProductById($productID) {
+        $sql = "SELECT * FROM products WHERE productID = :productID";
+
+        $params = ["productID" => $productID];
+
+        return $this->db->run($sql, $params)->fetch(); 
     }
 
-    
-    public function updateProduct($id, $productNaam, $omschrijving, $prijsPerStuk, $fotoPad = null)
+    public function updateProduct($productID, $productNaam, $omschrijving, $prijsPerStuk, $fotoPad) {
+        $sql = "UPDATE products 
+                SET productNaam = :productNaam, omschrijving = :omschrijving, prijsPerStuk = :prijsPerStuk, foto = :foto 
+                WHERE productID = :productID";
+        
+        $params = [
+            ':productNaam' => $productNaam,
+            ':omschrijving' => $omschrijving,
+            ':prijsPerStuk' => $prijsPerStuk,
+            ':foto' => $fotoPad,
+            ':productID' => $productID
+        ];
+
+        return $this->db->run($sql, $params) ? true : false;
+    }
+
+    public function deleteProduct($productID)
     {
-        if ($fotoPad) {
-            $sql = "UPDATE products SET productNaam = :productNaam, omschrijving = :omschrijving, 
-                    prijsPerStuk = :prijsPerStuk, foto = :foto WHERE id = :id";
-            $params = [
-                ':productNaam' => $productNaam,
-                ':omschrijving' => $omschrijving,
-                ':prijsPerStuk' => $prijsPerStuk,
-                ':foto' => $fotoPad,
-                ':id' => $id
-            ];
-        } else {
-            $sql = "UPDATE products SET productNaam = :productNaam, omschrijving = :omschrijving, 
-                    prijsPerStuk = :prijsPerStuk WHERE id = :id";
-            $params = [
-                ':productNaam' => $productNaam,
-                ':omschrijving' => $omschrijving,
-                ':prijsPerStuk' => $prijsPerStuk,
-                ':id' => $id
-            ];
+        $product = $this->getProductById($productID);
+        if ($product) {
+            if ($product['foto'] && file_exists($product['foto'])) {
+                unlink($product['foto']);
+            }
+
+            $sql = "DELETE FROM products WHERE productID = :productID";
+            $params = [":productID" => $productID];
+            return $this->db->run($sql, $params);
         }
 
-        return $this->db->run($sql, $params);
+        return false; 
     }
 }
 ?>

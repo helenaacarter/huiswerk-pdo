@@ -1,61 +1,54 @@
-<!DOCTYPE html>
-<html lang="nl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> PDO Opdracht Product Toevoegen</title>
-</head>
-
-<body>
-    <h1> Een product Toevoegen</h1>
-
-    <form action="insert-product.php" method="POST">
-        <label for="productNaam">Product Naam:</label>
-        <input type="text" id="productNaam" name="productNaam" required><br>
-
-        <label for="omschrijving">Omschrijving:</label>
-        <textarea id="omschrijving" name="omschrijving" required></textarea><br>
-
-        <label for="prijsPerStuk">Prijs per stuk:</label>
-        <input type="number" id="prijsPerStuk" name="prijsPerStuk" step="0.01" required><br>
-
-        <label for="foto">Foto:</label>
-        <input type="file" id="foto" name="foto" accept="image/*" required><br>
-
-        <button type="submit" name="submit">Product Toevoegen</button>
-    </form>
-
-</body>
-</html>
-
 <?php
-require_once '../includes/Database.php';
-require_once 'Product.php';
+require_once "Product.php";
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $productNaam = $_POST['productNaam'];
     $omschrijving = $_POST['omschrijving'];
     $prijsPerStuk = $_POST['prijsPerStuk'];
-    $foto = $_FILES['foto'];
+    $foto = $_FILES['foto']; 
 
-    $uploadDir = 'uploads/';
-    $fotoNaam = time() . '_' . basename($foto['name']);
-    $uploadBestand = $uploadDir . $fotoNaam;
+    $fotoPath = "../uploads/" . basename($foto['name']); 
+    $fotoSaved = move_uploaded_file($foto['tmp_name'], $fotoPath); 
 
-    
-    if (move_uploaded_file($foto['tmp_name'], $uploadBestand)) {
-        
+    if ($fotoSaved) {
         $product = new Product();
-        $result = $product->insertProduct($productNaam, $omschrijving, $prijsPerStuk, $fotoNaam);
+        $success = $product->insertProduct($productNaam, $omschrijving, $prijsPerStuk, $fotoPath);
 
-        if ($result) {
-            echo "Succesvol het product toegevoegd!";
+        if ($success) {
+            echo "Product goed toegevoegd!";
         } else {
-            echo "Het is niet gelukt om het product toe te voegen.";
+            echo "Het is niet gelukt met het toevoegen van het product.";
         }
     } else {
-        echo "Foto niet gelukt up te loaden.";
+        echo "Foto mislukt up te loaden ";
     }
 }
 ?>
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Nieuw Product Toevoegen</title>
+</head>
+
+<body>
+    <h1>Nieuw Product Toevoegen</h1>
+    <form action="insert-product.php" method="POST" enctype="multipart/form-data">
+        <label for="productNaam">Productnaam:</label>
+        <input type="text" name="productNaam" required><br>
+
+        <label for="omschrijving">Omschrijving:</label>
+        <input type="text" name="omschrijving" required><br>
+
+        <label for="prijsPerStuk">Prijs Per Stuk:</label>
+        <input type="number" name="prijsPerStuk" required><br>
+
+        <label for="foto">Foto:</label>
+        <input type="file" name="foto" accept="image/*"><br>
+
+        <button type="submit">Product Toevoegen</button>
+    </form>
+</body>
+
+</html>
