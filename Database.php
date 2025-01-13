@@ -11,11 +11,10 @@ class Database
             $this->pdo = new PDO($dsn, $user, $pass);
             $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (PDOException $e) {
-            die("Connection error: " . $e->getMessage());
+            die("Connectie error " . $e->getMessage());
         }
     }
 
-  
     public function run($query, $params = null)
     {
         try {
@@ -27,7 +26,7 @@ class Database
             }
             return $this->stmt; 
         } catch (PDOException $e) {
-            echo "Execution error: " . $e->getMessage();
+            echo "Executie error " . $e->getMessage();
             return false;
         }
     }
